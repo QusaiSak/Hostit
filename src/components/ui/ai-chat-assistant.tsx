@@ -1,10 +1,12 @@
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './button';
 import { Textarea } from './textarea';
-import { Bot, Send, X, Maximize2, Minimize2 } from 'lucide-react';
+import { Bot, Send, X, Maximize2, Minimize2, Loader2 } from 'lucide-react';
 import { Avatar } from './avatar';
+import { generateAiResponse, AiMessage } from '@/services/aiService';
+import { toast } from '@/components/ui/sonner';
 
 interface Message {
   id: string;
@@ -19,15 +21,24 @@ export function AiChatAssistant() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: "Hi there! I'm your AI deployment assistant. How can I help you today?",
+      content: "Hi there! I'm your DeployAI assistant. How can I help you with your deployment needs today?",
       sender: 'ai',
       timestamp: new Date()
     }
   ]);
   const [newMessage, setNewMessage] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Scroll to the bottom of the messages when a new message is added
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
-  const handleSendMessage = () => {
-    if (newMessage.trim() === '') return;
+  const handleSendMessage = async () => {
+    if (newMessage.trim() === '' || isProcessing) return;
     
     // Add user message
     const userMsg: Message = {
@@ -39,28 +50,49 @@ export function AiChatAssistant() {
     
     setMessages(prev => [...prev, userMsg]);
     setNewMessage('');
+    setIsProcessing(true);
     
-    // Simulate AI response (in a real app, this would call your AI service)
-    setTimeout(() => {
-      const aiResponses = [
-        "I can help you deploy your application. Would you like me to guide you through the process?",
-        "Your deployment looks good! Need any help with configuration or GitHub integration?",
-        "I noticed you're using React. Our platform offers optimized builds for React applications.",
-        "If you're having trouble with your deployment, I can help troubleshoot the issues.",
-        "Looking to add custom domains? I can walk you through the steps to set that up."
-      ];
+    try {
+      // Convert our messages to the format expected by the AI service
+      const messageHistory: AiMessage[] = messages
+        .filter(msg => msg.id !== '1') // Skip the initial greeting
+        .map(msg => ({
+          role: msg.sender === 'user' ? 'user' : 'assistant',
+          content: msg.content,
+        }));
       
-      const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+      // Add the latest user message
+      messageHistory.push({
+        role: 'user',
+        content: userMsg.content,
+      });
+      
+      // Get response from AI service
+      const aiResponse = await generateAiResponse(messageHistory);
       
       const aiMsg: Message = {
         id: (Date.now() + 1).toString(),
-        content: randomResponse,
+        content: aiResponse,
         sender: 'ai',
         timestamp: new Date()
       };
       
       setMessages(prev => [...prev, aiMsg]);
-    }, 1000);
+    } catch (error) {
+      console.error("Error getting AI response:", error);
+      toast.error("Failed to get an AI response. Please try again.");
+      
+      const errorMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "I'm sorry, I encountered an error processing your request. Please try again.",
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorMsg]);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -68,6 +100,38 @@ export function AiChatAssistant() {
       e.preventDefault();
       handleSendMessage();
     }
+  };
+
+  // Function to format code blocks in messages
+  const formatMessageContent = (content: string) => {
+    // Check if the message contains code blocks
+    if (content.includes('```')) {
+      // Split by code blocks
+      const parts = content.split(/(```[\s\S]*?```)/g);
+      
+      return parts.map((part, i) => {
+        // Check if this part is a code block
+        if (part.startsWith('```') && part.endsWith('```')) {
+          // Extract the code and language
+          const codeContent = part.slice(3, -3);
+          const firstLineBreak = codeContent.indexOf('\n');
+          const language = firstLineBreak > 0 ? codeContent.slice(0, firstLineBreak).trim() : '';
+          const code = firstLineBreak > 0 ? codeContent.slice(firstLineBreak + 1) : codeContent;
+          
+          return (
+            <pre key={i} className="bg-black/40 p-3 rounded-md my-2 overflow-x-auto">
+              {language && <div className="text-xs text-gray-400 mb-1">{language}</div>}
+              <code>{code}</code>
+            </pre>
+          );
+        }
+        
+        // Handle paragraphs for non-code parts
+        return <span key={i} className="whitespace-pre-wrap">{part}</span>;
+      });
+    }
+    
+    return <span className="whitespace-pre-wrap">{content}</span>;
   };
 
   return (
@@ -96,14 +160,14 @@ export function AiChatAssistant() {
             className={`fixed bottom-6 right-6 w-80 md:w-96 bg-black/90 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl z-50 flex flex-col overflow-hidden ${isMinimized ? 'h-20' : 'h-[500px]'}`}
           >
             {/* Header */}
-            <div className="p-4 border-b border-white/10 flex items-center justify-between bg-gradient-button">
+            <div className="p-4 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-blue-700 to-indigo-700">
               <div className="flex items-center space-x-2">
                 <Avatar>
                   <Bot className="h-5 w-5" />
                 </Avatar>
                 <div>
-                  <h3 className="font-medium text-white">AI Assistant</h3>
-                  <p className="text-xs text-white/70">Deployment Guide</p>
+                  <h3 className="font-medium text-white">DeployAI Assistant</h3>
+                  <p className="text-xs text-white/70">Powered by Gemini Flash</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
@@ -139,7 +203,7 @@ export function AiChatAssistant() {
             
             {/* Chat messages */}
             {!isMinimized && (
-              <div className="flex-1 p-4 overflow-y-auto space-y-4 scrollbar-thin">
+              <div className="flex-1 p-4 overflow-y-auto space-y-4 scrollbar-thin bg-gradient-to-b from-black/60 to-gray-900/60">
                 {messages.map((message) => (
                   <div 
                     key={message.id}
@@ -148,17 +212,30 @@ export function AiChatAssistant() {
                     <div 
                       className={`max-w-[80%] p-3 rounded-lg ${
                         message.sender === 'user'
-                          ? 'bg-launchpad-purple/80 text-white rounded-br-none'
+                          ? 'bg-indigo-600 text-white rounded-br-none'
                           : 'bg-white/10 text-white rounded-bl-none'
                       }`}
                     >
-                      <p className="text-sm">{message.content}</p>
+                      <div className="text-sm">
+                        {formatMessageContent(message.content)}
+                      </div>
                       <p className="text-xs text-white/50 mt-1 text-right">
                         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
                   </div>
                 ))}
+                {isProcessing && (
+                  <div className="flex justify-start">
+                    <div className="bg-white/10 text-white rounded-lg rounded-bl-none p-3">
+                      <div className="flex items-center space-x-2">
+                        <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
+                        <span className="text-sm text-blue-300">Thinking...</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
               </div>
             )}
             
@@ -174,17 +251,19 @@ export function AiChatAssistant() {
                 >
                   <Textarea
                     className="min-h-[60px] max-h-[120px] bg-white/10 border-white/20 resize-none text-white"
-                    placeholder="Ask me anything about your deployment..."
+                    placeholder="Ask me about DeployAI features..."
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
+                    disabled={isProcessing}
                   />
                   <Button 
                     type="submit" 
                     size="icon" 
-                    className="h-[60px] bg-gradient-button"
+                    className="h-[60px] bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                    disabled={isProcessing}
                   >
-                    <Send size={18} />
+                    {isProcessing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send size={18} />}
                   </Button>
                 </form>
               </div>
