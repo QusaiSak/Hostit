@@ -12,7 +12,7 @@ export interface AiMessage {
 }
 
 const DEFAULT_OPTIONS: AiResponseOptions = {
-  model: "google/gemini-2.5-pro-exp-03-25:free", // Gemini Flash model
+  model: "google/gemini-2.0-flash-exp:free", // Updated to Gemini Flash model
   systemPrompt: 
     "You are a helpful AI assistant for the HostIT platform, a service that helps users deploy their applications through GitHub integration. " +
     "ONLY answer questions related to the HostIT platform features, deployment processes, GitHub integration, and website functionality. " +
@@ -37,7 +37,7 @@ export const generateAiResponse = async (
       ];
     }
     
-    // Get the OpenRouter API key from the window/global variable
+    // Define the OpenRouter API key directly
     const OPENROUTER_API_KEY = "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";
     
     if (!OPENROUTER_API_KEY) {
