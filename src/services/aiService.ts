@@ -22,9 +22,6 @@ const DEFAULT_OPTIONS: AiResponseOptions = {
   maxTokens: 1000,
 };
 
-// OpenRouter API key
-const OPENROUTER_API_KEY = "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";
-
 export const generateAiResponse = async (
   messages: AiMessage[],
   options: Partial<AiResponseOptions> = {}
@@ -38,6 +35,14 @@ export const generateAiResponse = async (
         { role: "system", content: mergedOptions.systemPrompt },
         ...messages
       ];
+    }
+    
+    // Get the OpenRouter API key from the window/global variable
+    const OPENROUTER_API_KEY = window.OPENROUTER_API_KEY;
+    
+    if (!OPENROUTER_API_KEY) {
+      console.error("OpenRouter API key not found");
+      throw new Error("OpenRouter API key not found");
     }
     
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {

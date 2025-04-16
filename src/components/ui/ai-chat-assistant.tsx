@@ -3,10 +3,11 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './button';
 import { Textarea } from './textarea';
-import { Bot, Send, X, Maximize2, Minimize2, Loader2 } from 'lucide-react';
+import { Bot, Send, X, Maximize2, Minimize2, Loader2, Code, Check, Link, Zap, MessageCircle } from 'lucide-react';
 import { Avatar } from './avatar';
 import { generateAiResponse, AiMessage } from '@/services/aiService';
 import { toast } from '@/components/ui/sonner';
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   id: string;
@@ -102,36 +103,60 @@ export function AiChatAssistant() {
     }
   };
 
-  // Function to format code blocks in messages
+  // Function to format message content using ReactMarkdown
   const formatMessageContent = (content: string) => {
-    // Check if the message contains code blocks
-    if (content.includes('```')) {
-      // Split by code blocks
-      const parts = content.split(/(```[\s\S]*?```)/g);
-      
-      return parts.map((part, i) => {
-        // Check if this part is a code block
-        if (part.startsWith('```') && part.endsWith('```')) {
-          // Extract the code and language
-          const codeContent = part.slice(3, -3);
-          const firstLineBreak = codeContent.indexOf('\n');
-          const language = firstLineBreak > 0 ? codeContent.slice(0, firstLineBreak).trim() : '';
-          const code = firstLineBreak > 0 ? codeContent.slice(firstLineBreak + 1) : codeContent;
-          
-          return (
-            <pre key={i} className="bg-black/40 p-3 rounded-md my-2 overflow-x-auto">
-              {language && <div className="text-xs text-gray-400 mb-1">{language}</div>}
-              <code>{code}</code>
-            </pre>
-          );
-        }
-        
-        // Handle paragraphs for non-code parts
-        return <span key={i} className="whitespace-pre-wrap">{part}</span>;
-      });
+    return (
+      <ReactMarkdown
+        className="message-content"
+        components={{
+          p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+          ul: ({ children }) => <ul className="list-disc pl-5 mb-2">{children}</ul>,
+          ol: ({ children }) => <ol className="list-decimal pl-5 mb-2">{children}</ol>,
+          li: ({ children }) => <li className="mb-1">{children}</li>,
+          h1: ({ children }) => <h1 className="text-lg font-bold mb-2">{children}</h1>,
+          h2: ({ children }) => <h2 className="text-md font-bold mb-2">{children}</h2>,
+          h3: ({ children }) => <h3 className="font-bold mb-1">{children}</h3>,
+          a: ({ href, children }) => (
+            <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">
+              {children}
+            </a>
+          ),
+          code: ({ node, className, children, ...props }) => {
+            const match = /language-(\w+)/.exec(className || '');
+            return match ? (
+              <div className="bg-black/40 p-2 rounded my-2 overflow-x-auto">
+                <div className="flex items-center text-xs text-gray-400 mb-1">
+                  <Code className="w-3.5 h-3.5 mr-1" />
+                  {match[1]}
+                </div>
+                <code className="text-sm" {...props}>
+                  {children}
+                </code>
+              </div>
+            ) : (
+              <code className="bg-black/30 px-1 py-0.5 rounded text-sm" {...props}>
+                {children}
+              </code>
+            );
+          }
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    );
+  };
+
+  // Icons for message categories
+  const getMessageIcon = (content: string) => {
+    if (content.toLowerCase().includes('deploy') || content.toLowerCase().includes('github')) {
+      return <Zap className="h-4 w-4 text-blue-400" />;
+    } else if (content.toLowerCase().includes('link') || content.toLowerCase().includes('domain')) {
+      return <Link className="h-4 w-4 text-blue-400" />;
+    } else if (content.toLowerCase().includes('success') || content.toLowerCase().includes('complete')) {
+      return <Check className="h-4 w-4 text-green-400" />;
+    } else {
+      return <MessageCircle className="h-4 w-4 text-blue-400" />;
     }
-    
-    return <span className="whitespace-pre-wrap">{content}</span>;
   };
 
   return (
@@ -157,7 +182,7 @@ export function AiChatAssistant() {
             }
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
             transition={{ duration: 0.2 }}
-            className={`fixed bottom-6 right-6 w-80 md:w-96 bg-black/90 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl z-50 flex flex-col overflow-hidden ${isMinimized ? 'h-20' : 'h-[500px]'}`}
+            className={`fixed bottom-6 right-6 w-80 md:w-[400px] bg-black/90 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl z-50 flex flex-col overflow-hidden ${isMinimized ? 'h-20' : 'h-[500px]'}`}
           >
             {/* Header */}
             <div className="p-4 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-blue-700 to-indigo-700">
@@ -210,12 +235,18 @@ export function AiChatAssistant() {
                     className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div 
-                      className={`max-w-[80%] p-3 rounded-lg ${
+                      className={`max-w-[85%] p-3 rounded-lg ${
                         message.sender === 'user'
                           ? 'bg-indigo-600 text-white rounded-br-none'
                           : 'bg-white/10 text-white rounded-bl-none'
                       }`}
                     >
+                      {message.sender === 'ai' && (
+                        <div className="flex items-center text-xs text-white/60 mb-1">
+                          {getMessageIcon(message.content)}
+                          <span className="ml-1 font-medium">Assistant</span>
+                        </div>
+                      )}
                       <div className="text-sm">
                         {formatMessageContent(message.content)}
                       </div>
