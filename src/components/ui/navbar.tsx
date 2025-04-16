@@ -20,9 +20,9 @@ export function Navbar() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span className="text-white font-bold text-xl">D</span>
+              <span className="text-white font-bold text-xl">H</span>
             </motion.div>
-            <span className="text-white font-bold text-xl hidden sm:block">DeployAI</span>
+            <span className="text-white font-bold text-xl hidden sm:block">HostIT</span>
           </Link>
 
           {/* Desktop Navigation */}

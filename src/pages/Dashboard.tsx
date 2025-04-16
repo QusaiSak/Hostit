@@ -1,12 +1,12 @@
 
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
-import { Navbar } from '@/components/ui/navbar';
+import { AiChatAssistant } from '@/components/ui/ai-chat-assistant';
 import { Footer } from '@/components/ui/footer';
 import { GithubRepoList } from '@/components/ui/github-repo-list';
-import { AiChatAssistant } from '@/components/ui/ai-chat-assistant';
-import { motion } from 'framer-motion';
-import { Activity, GitBranch, Cpu, BarChart, ArrowUpRight } from 'lucide-react';
+import { Navbar } from '@/components/ui/navbar';
 import { Progress } from '@/components/ui/progress';
+import { RedirectToSignIn, SignedIn, SignedOut } from '@clerk/clerk-react';
+import { motion } from 'framer-motion';
+import { Activity, ArrowUpRight, BarChart, Cpu, GitBranch } from 'lucide-react';
 
 const Dashboard = () => {
   return (
@@ -34,7 +34,7 @@ const Dashboard = () => {
                 
                 <div className="hidden md:block">
                   <motion.a 
-                    href="https://docs.deployai.com" 
+                    href="/docs" 
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-4 py-2 rounded-lg bg-transparent hover:bg-white/5 border border-blue-500/30 text-blue-400 transition-colors"

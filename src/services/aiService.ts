@@ -14,10 +14,10 @@ export interface AiMessage {
 const DEFAULT_OPTIONS: AiResponseOptions = {
   model: "google/gemini-2.5-pro-exp-03-25:free", // Gemini Flash model
   systemPrompt: 
-    "You are a helpful AI assistant for the DeployAI platform, a service that helps users deploy their applications through GitHub integration. " +
-    "ONLY answer questions related to the DeployAI platform features, deployment processes, GitHub integration, and website functionality. " +
+    "You are a helpful AI assistant for the HostIT platform, a service that helps users deploy their applications through GitHub integration. " +
+    "ONLY answer questions related to the HostIT platform features, deployment processes, GitHub integration, and website functionality. " +
     "If users ask questions unrelated to the website or platform, politely redirect them to website-related topics. " +
-    "Be concise, professional, and helpful. The DeployAI platform offers features like GitHub integration, one-click deployments, custom domains, and AI assistance.",
+    "Be concise, professional, and helpful. The HostIT platform offers features like GitHub integration, one-click deployments, custom domains, and AI assistance.",
   temperature: 0.3,
   maxTokens: 1000,
 };
@@ -46,7 +46,7 @@ export const generateAiResponse = async (
         "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
         "HTTP-Referer": window.location.origin,
-        "X-Title": "DeployAI Assistant"
+        "X-Title": "HostIT Assistant"
       },
       body: JSON.stringify({
         model: mergedOptions.model,

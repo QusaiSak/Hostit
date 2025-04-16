@@ -21,7 +21,7 @@ export function AiChatAssistant() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: "Hi there! I'm your DeployAI assistant. How can I help you with your deployment needs today?",
+      content: "Hi there! I'm your HostIT assistant. How can I help you with your deployment needs today?",
       sender: 'ai',
       timestamp: new Date()
     }
@@ -166,7 +166,7 @@ export function AiChatAssistant() {
                   <Bot className="h-5 w-5" />
                 </Avatar>
                 <div>
-                  <h3 className="font-medium text-white">DeployAI Assistant</h3>
+                  <h3 className="font-medium text-white">HostIT Assistant</h3>
                   <p className="text-xs text-white/70">Powered by Gemini Flash</p>
                 </div>
               </div>
@@ -251,7 +251,7 @@ export function AiChatAssistant() {
                 >
                   <Textarea
                     className="min-h-[60px] max-h-[120px] bg-white/10 border-white/20 resize-none text-white"
-                    placeholder="Ask me about DeployAI features..."
+                    placeholder="Ask me about HostIT features..."
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyDown={handleKeyDown}

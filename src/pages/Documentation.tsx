@@ -29,7 +29,7 @@ const Documentation = () => {
       title: "Getting Started",
       icon: <FileText className="w-5 h-5" />,
       articles: [
-        { title: "Introduction to DeployAI", link: "#introduction" },
+        { title: "Introduction to HostIT", link: "#introduction" },
         { title: "Quick Start Guide", link: "#quick-start" },
         { title: "Creating Your First Project", link: "#first-project" },
         { title: "Account Setup", link: "#account-setup" },
@@ -110,7 +110,7 @@ const Documentation = () => {
               </div>
               <h1 className="text-4xl md:text-5xl font-bold mb-4">Documentation</h1>
               <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
-                Everything you need to know about deploying your projects with DeployAI.
+                Everything you need to know about deploying your projects with HostIT.
               </p>
               
               <div className="relative max-w-2xl mx-auto">
@@ -173,10 +173,10 @@ const Documentation = () => {
               >
                 {/* Getting Started Section */}
                 <div className="mb-12" id="introduction">
-                  <h2 className="text-3xl font-bold mb-6">Getting Started with DeployAI</h2>
+                  <h2 className="text-3xl font-bold mb-6">Getting Started with HostIT</h2>
                   <div className="bg-black/30 backdrop-blur-sm border border-white/10 rounded-lg p-6 mb-8">
                     <p className="text-gray-300 mb-4">
-                      DeployAI is a modern deployment platform that integrates with GitHub to help you deploy your projects quickly and easily. Our AI-powered platform automatically analyzes your code and sets up the optimal deployment environment.
+                      HostIT is a modern deployment platform that integrates with GitHub to help you deploy your projects quickly and easily. Our AI-powered platform automatically analyzes your code and sets up the optimal deployment environment.
                     </p>
                     <p className="text-gray-300 mb-4">
                       This documentation will guide you through the process of setting up your account, connecting your GitHub repositories, and deploying your first project.
@@ -184,7 +184,7 @@ const Documentation = () => {
                     <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 flex items-start">
                       <HelpCircle className="w-5 h-5 text-blue-400 mr-3 mt-0.5" />
                       <p className="text-blue-300 text-sm">
-                        New to DeployAI? We recommend starting with our <a href="#quick-start" className="text-blue-400 underline">Quick Start Guide</a> to get up and running in minutes.
+                        New to HostIT? We recommend starting with our <a href="#quick-start" className="text-blue-400 underline">Quick Start Guide</a> to get up and running in minutes.
                       </p>
                     </div>
                   </div>
@@ -220,7 +220,7 @@ const Documentation = () => {
                     <ol className="list-decimal list-inside space-y-4 text-gray-300">
                       <li>
                         <span className="font-medium text-white">Sign in to your account</span>
-                        <p className="mt-1 ml-6">Use your GitHub account to sign in or create a new DeployAI account.</p>
+                        <p className="mt-1 ml-6">Use your GitHub account to sign in or create a new HostIT account.</p>
                       </li>
                       <li>
                         <span className="font-medium text-white">Connect your GitHub account</span>

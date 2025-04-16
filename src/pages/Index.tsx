@@ -33,7 +33,7 @@ const Index = () => {
                 Deploy your projects with AI-powered speed
               </h1>
               <p className="text-lg md:text-xl text-gray-400 mb-8">
-                DeployAI gives you the power to deploy applications instantly with one click.
+                HostIT gives you the power to deploy applications instantly with one click.
                 Connect your GitHub repositories and let our AI handle the rest.
               </p>
               
@@ -62,7 +62,7 @@ const Index = () => {
             <div className="rounded-xl border border-white/10 shadow-2xl overflow-hidden">
               <img 
                 src="/placeholder.svg" 
-                alt="DeployAI Dashboard Preview"
+                alt="HostIT Dashboard Preview"
                 className="w-full h-auto object-cover"
                 style={{ minHeight: '300px' }}
               />
