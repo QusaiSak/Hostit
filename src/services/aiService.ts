@@ -38,6 +38,7 @@ export const generateAiResponse = async (
     }
     
     const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+
     
     if (!OPENROUTER_API_KEY) {
       console.error("OpenRouter API key not found");
