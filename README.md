@@ -1,6 +1,7 @@
 # HostIT - Modern Application Deployment Platform
 
-![HostIT Platform](public/hero-preview.png)
+![image](https://github.com/user-attachments/assets/5ef97493-cae4-4180-8adb-f12288017f74)
+
 
 HostIT is a modern, user-friendly platform that simplifies application deployment through GitHub integration, offering features like one-click deployments, real-time monitoring, and AI-powered assistance.
 
