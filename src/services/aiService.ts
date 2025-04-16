@@ -38,7 +38,7 @@ export const generateAiResponse = async (
     }
     
     // Get the OpenRouter API key from the window/global variable
-    const OPENROUTER_API_KEY = window.OPENROUTER_API_KEY;
+    const OPENROUTER_API_KEY = "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";
     
     if (!OPENROUTER_API_KEY) {
       console.error("OpenRouter API key not found");

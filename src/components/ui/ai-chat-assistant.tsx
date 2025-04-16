@@ -1,13 +1,12 @@
-
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from '@/components/ui/sonner';
+import { AiMessage, generateAiResponse } from '@/services/aiService';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Bot, Check, Code, Link, Loader2, Maximize2, MessageCircle, Minimize2, Send, X, Zap } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import { Avatar } from './avatar';
 import { Button } from './button';
 import { Textarea } from './textarea';
-import { Bot, Send, X, Maximize2, Minimize2, Loader2, Code, Check, Link, Zap, MessageCircle } from 'lucide-react';
-import { Avatar } from './avatar';
-import { generateAiResponse, AiMessage } from '@/services/aiService';
-import { toast } from '@/components/ui/sonner';
-import ReactMarkdown from 'react-markdown';
 
 interface Message {
   id: string;
@@ -15,6 +14,7 @@ interface Message {
   sender: 'user' | 'ai';
   timestamp: Date;
 }
+
 
 export function AiChatAssistant() {
   const [isOpen, setIsOpen] = useState(false);
@@ -68,7 +68,6 @@ export function AiChatAssistant() {
         content: userMsg.content,
       });
       
-      // Get response from AI service
       const aiResponse = await generateAiResponse(messageHistory);
       
       const aiMsg: Message = {
