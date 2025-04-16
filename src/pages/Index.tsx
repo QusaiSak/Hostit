@@ -1,8 +1,10 @@
+
 import { Navbar } from '@/components/ui/navbar';
 import { Footer } from '@/components/ui/footer';
 import { HeroSection } from '@/components/ui/hero-section';
 import { FeaturesSection } from '@/components/ui/features-section';
 import { AiChatAssistant } from '@/components/ui/ai-chat-assistant';
+import { HowItWorksSection } from '@/components/ui/how-it-works-section';
 
 const Index = () => {
   return (
@@ -12,6 +14,7 @@ const Index = () => {
         <section className="container mx-auto px-6 pt-24">
           <HeroSection />
         </section>
+        <HowItWorksSection />
         <FeaturesSection />
       </main>
       <Footer />

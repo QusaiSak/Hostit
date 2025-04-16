@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from './button';
 import { Input } from './input';
-import { Search, Github, Code, Star, Clock, Rocket, Link2 } from 'lucide-react';
+import { Search, Github, Code, Star, Clock, Rocket, Link2, Copy, CheckCircle } from 'lucide-react';
 import axios from 'axios';
+import { useToast } from '@/hooks/use-toast';
 
 interface Repository {
   id: number;
@@ -21,13 +22,14 @@ export function GithubRepoList() {
   const [filteredRepos, setFilteredRepos] = useState<Repository[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [copiedRepo, setCopiedRepo] = useState<number | null>(null);
+  const { toast } = useToast();
 
   // Mock fetch GitHub repos (in a real app, this would use the GitHub API with auth)
   const fetchRepos = async () => {
     setIsLoading(true);
     try {
       // In a real app with GitHub OAuth, you'd use the user's token to fetch their repos
-      // This is just a mock example using the public API to fetch a sample user's repos
       const response = await axios.get('https://api.github.com/users/octocat/repos');
       setRepos(response.data);
       setFilteredRepos(response.data);
@@ -111,29 +113,44 @@ export function GithubRepoList() {
     // This would connect to your backend deployment service in a real app
     console.log(`Deploying repo with ID: ${repoId}`);
     // Simulate deployment success
-    alert(`Deployment initiated for repository! In a real app, this would start your deployment process.`);
+    toast({
+      title: "Deployment Initiated",
+      description: "Your repository is being deployed. You'll receive a notification when it's complete.",
+    });
   };
 
   const getRepoLink = (repoId: number) => {
     // This would generate a deployment link in a real app
-    console.log(`Getting link for repo with ID: ${repoId}`);
-    return `https://deploy-ai-launchpad.web.app/${repoId}`;
+    const link = `https://deploy-ai-launchpad.web.app/${repoId}`;
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(link).then(() => {
+      setCopiedRepo(repoId);
+      toast({
+        title: "Link Copied",
+        description: "Deployment link copied to clipboard.",
+      });
+      
+      setTimeout(() => setCopiedRepo(null), 3000);
+    });
+    
+    return link;
   };
 
   return (
     <div className="w-full">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <h2 className="text-2xl font-bold">Your Repositories</h2>
           <p className="text-gray-400">Select a repository to deploy</p>
         </div>
         
-        <div className="flex w-full md:w-auto gap-2">
+        <div className="flex w-full md:w-auto gap-3">
           <div className="relative flex-1 md:flex-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
             <Input 
               placeholder="Search repositories..." 
-              className="pl-10 bg-black/20 border-white/10"
+              className="pl-10 bg-black/20 border-white/10 pr-4 py-2"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -176,7 +193,7 @@ export function GithubRepoList() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+                <div className="flex flex-col md:flex-row justify-between md:items-center gap-6">
                   <div className="flex-1">
                     <div className="flex items-center mb-2">
                       <h3 className="text-xl font-medium mr-3">{repo.name}</h3>
@@ -211,12 +228,21 @@ export function GithubRepoList() {
                   
                   <div className="flex flex-col sm:flex-row gap-3">
                     <Button 
-                      onClick={() => alert(`Link generated: ${getRepoLink(repo.id)}`)}
+                      onClick={() => getRepoLink(repo.id)}
                       variant="outline" 
                       className="border-white/20 bg-white/10 text-white hover:bg-white/20"
                     >
-                      <Link2 size={16} className="mr-2" />
-                      Get Link
+                      {copiedRepo === repo.id ? (
+                        <>
+                          <CheckCircle size={16} className="mr-2 text-green-500" />
+                          Copied
+                        </>
+                      ) : (
+                        <>
+                          <Link2 size={16} className="mr-2" />
+                          Get Link
+                        </>
+                      )}
                     </Button>
                     <Button 
                       onClick={() => deployRepo(repo.id)}
@@ -230,7 +256,7 @@ export function GithubRepoList() {
               </motion.div>
             ))
           ) : (
-            <div className="text-center py-8 border border-white/10 rounded-lg bg-black/20">
+            <div className="text-center py-12 border border-white/10 rounded-lg bg-black/20">
               <Github size={48} className="mx-auto text-gray-500 mb-4" />
               <h3 className="text-xl font-medium mb-2">No repositories found</h3>
               <p className="text-gray-400">Try adjusting your search or connect your GitHub account</p>
