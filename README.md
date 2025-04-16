@@ -23,7 +23,7 @@ HostIT is a modern, user-friendly platform that simplifies application deploymen
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/QusaiSak/hostit.git
+git clone https://github.com/QusaiSak/Hostit.git
 cd hostit
 ```
 
