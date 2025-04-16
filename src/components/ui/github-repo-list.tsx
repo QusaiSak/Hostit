@@ -3,9 +3,10 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from './button';
 import { Input } from './input';
-import { Search, Github, Code, Star, Clock, Rocket, Link2, Copy, CheckCircle } from 'lucide-react';
-import axios from 'axios';
+import { Search, Github, Code, Star, Clock, Rocket, Link2, Copy, CheckCircle, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useUser, useAuth } from '@clerk/clerk-react';
+import { Progress } from './progress';
 
 interface Repository {
   id: number;
@@ -15,66 +16,66 @@ interface Repository {
   stargazers_count: number;
   updated_at: string;
   language: string | null;
+  clone_url?: string;
+  default_branch?: string;
 }
 
 export function GithubRepoList() {
   const [repos, setRepos] = useState<Repository[]>([]);
   const [filteredRepos, setFilteredRepos] = useState<Repository[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedRepo, setCopiedRepo] = useState<number | null>(null);
+  const [isDeploying, setIsDeploying] = useState<number | null>(null);
+  const [deploymentStatus, setDeploymentStatus] = useState<Record<number, 'pending' | 'success' | 'error'>>({});
   const { toast } = useToast();
+  const { user, isSignedIn } = useUser();
+  const { getToken } = useAuth();
 
-  // Mock fetch GitHub repos (in a real app, this would use the GitHub API with auth)
-  const fetchRepos = async () => {
-    setIsLoading(true);
+  useEffect(() => {
+    if (isSignedIn && user) {
+      // Get GitHub username from user's public metadata or external accounts
+      const githubAccount = user.externalAccounts.find(
+        account => account.provider === "github"
+      );
+      
+      if (githubAccount?.username) {
+        fetchRepositories(githubAccount.username);
+      } else {
+        setIsLoading(false);
+        setError("No GitHub account connected. Please connect your GitHub account in settings.");
+      }
+    } else {
+      setIsLoading(false);
+    }
+  }, [isSignedIn, user]);
+
+  const fetchRepositories = async (username: string) => {
     try {
-      // In a real app with GitHub OAuth, you'd use the user's token to fetch their repos
-      const response = await axios.get('https://api.github.com/users/octocat/repos');
-      setRepos(response.data);
-      setFilteredRepos(response.data);
-    } catch (error) {
-      console.error('Error fetching repos:', error);
-      // Mock data as fallback
-      const mockRepos: Repository[] = [
-        {
-          id: 1,
-          name: 'next-js-portfolio',
-          description: 'My personal website built with Next.js and TailwindCSS',
-          html_url: 'https://github.com/user/next-js-portfolio',
-          stargazers_count: 12,
-          updated_at: '2023-08-15T10:30:00Z',
-          language: 'TypeScript'
+      setIsLoading(true);
+      setError(null);
+      
+      const response = await fetch(`https://api.github.com/users/${username}/repos`, {
+        headers: {
+          'Accept': 'application/vnd.github.v3+json',
         },
-        {
-          id: 2,
-          name: 'react-task-manager',
-          description: 'A simple task manager built with React and Firebase',
-          html_url: 'https://github.com/user/react-task-manager',
-          stargazers_count: 8,
-          updated_at: '2023-09-02T14:45:00Z',
-          language: 'JavaScript'
-        },
-        {
-          id: 3,
-          name: 'python-ml-experiments',
-          description: 'Machine learning experiments using Python and TensorFlow',
-          html_url: 'https://github.com/user/python-ml-experiments',
-          stargazers_count: 5,
-          updated_at: '2023-07-22T09:15:00Z',
-          language: 'Python'
-        }
-      ];
-      setRepos(mockRepos);
-      setFilteredRepos(mockRepos);
+      });
+
+      if (!response.ok) {
+        throw new Error(`GitHub API request failed: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setRepos(data);
+      setFilteredRepos(data);
+    } catch (err: any) {
+      console.error('Error fetching repositories:', err);
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchRepos();
-  }, []);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -109,22 +110,59 @@ export function GithubRepoList() {
     return colors[language || ''] || 'bg-gray-400';
   };
 
-  const deployRepo = (repoId: number) => {
-    // This would connect to your backend deployment service in a real app
-    console.log(`Deploying repo with ID: ${repoId}`);
-    // Simulate deployment success
-    toast({
-      title: "Deployment Initiated",
-      description: "Your repository is being deployed. You'll receive a notification when it's complete.",
-    });
+  const handleDeploy = async (repoId: number, repoName: string, cloneUrl: string) => {
+    setIsDeploying(repoId);
+    setDeploymentStatus(prev => ({ ...prev, [repoId]: 'pending' }));
+    
+    try {
+      // In a real app, this would be a call to your backend API
+      const token = await getToken({ template: "api_auth" });
+      
+      // Simulate API call to backend
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // This would be a real API call in production
+      // const response = await fetch('https://api.deployai.com/deploy', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': `Bearer ${token}`
+      //   },
+      //   body: JSON.stringify({
+      //     repoName,
+      //     cloneUrl,
+      //   })
+      // });
+      
+      // if (!response.ok) throw new Error('Deployment failed');
+      // const data = await response.json();
+      
+      setDeploymentStatus(prev => ({ ...prev, [repoId]: 'success' }));
+      
+      toast({
+        title: "Deployment Successful",
+        description: `${repoName} has been deployed successfully.`,
+      });
+    } catch (error) {
+      console.error('Deployment error:', error);
+      setDeploymentStatus(prev => ({ ...prev, [repoId]: 'error' }));
+      
+      toast({
+        title: "Deployment Failed",
+        description: "There was an error deploying your repository.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDeploying(null);
+    }
   };
 
-  const getRepoLink = (repoId: number) => {
+  const getRepoLink = (repoId: number, repoName: string) => {
     // This would generate a deployment link in a real app
-    const link = `https://deploy-ai-launchpad.web.app/${repoId}`;
+    const deploymentUrl = `https://deployai-${repoName.toLowerCase().replace(/[^a-z0-9]/g, '-')}.vercel.app`;
     
     // Copy to clipboard
-    navigator.clipboard.writeText(link).then(() => {
+    navigator.clipboard.writeText(deploymentUrl).then(() => {
       setCopiedRepo(repoId);
       toast({
         title: "Link Copied",
@@ -133,9 +171,34 @@ export function GithubRepoList() {
       
       setTimeout(() => setCopiedRepo(null), 3000);
     });
-    
-    return link;
   };
+
+  if (isLoading && !repos.length) {
+    return (
+      <div className="w-full h-64 flex flex-col items-center justify-center">
+        <div className="relative w-20 h-20">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Github size={36} className="text-blue-500 animate-pulse" />
+          </div>
+          <div className="absolute inset-0 border-t-2 border-blue-500 rounded-full animate-spin"></div>
+        </div>
+        <p className="mt-4 text-gray-400">Fetching your repositories...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full p-8 flex flex-col items-center justify-center border border-red-300 bg-red-50/10 rounded-lg">
+        <AlertCircle size={48} className="text-red-500 mb-4" />
+        <h3 className="text-lg font-semibold text-red-500">Error</h3>
+        <p className="text-center text-gray-400 mt-2">{error}</p>
+        <Button onClick={() => window.location.reload()} className="mt-4">
+          Try Again
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
@@ -156,9 +219,11 @@ export function GithubRepoList() {
             />
           </div>
           <Button 
-            onClick={fetchRepos}
+            onClick={() => user?.externalAccounts?.find(a => a.provider === "github")?.username && 
+              fetchRepositories(user.externalAccounts.find(a => a.provider === "github")!.username!)}
             variant="outline" 
             className="border-white/20 bg-white/10 text-white hover:bg-white/20"
+            disabled={isLoading}
           >
             <Github className="mr-2 h-4 w-4" />
             Refresh
@@ -166,7 +231,7 @@ export function GithubRepoList() {
         </div>
       </div>
 
-      {isLoading ? (
+      {isLoading && repos.length > 0 ? (
         <div className="grid grid-cols-1 gap-4">
           {[1, 2, 3].map(i => (
             <div 
@@ -188,7 +253,7 @@ export function GithubRepoList() {
             filteredRepos.map((repo, index) => (
               <motion.div 
                 key={repo.id}
-                className="border border-white/10 rounded-lg p-6 bg-gradient-card hover:border-launchpad-purple/40 transition-all"
+                className="border border-white/10 rounded-lg p-6 bg-gradient-card hover:border-blue-500/40 transition-all"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -218,7 +283,7 @@ export function GithubRepoList() {
                         href={repo.html_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-launchpad-cyan hover:underline flex items-center"
+                        className="text-sm text-blue-400 hover:underline flex items-center"
                       >
                         <Code size={14} className="mr-2" />
                         <span>View on GitHub</span>
@@ -226,31 +291,66 @@ export function GithubRepoList() {
                     </div>
                   </div>
                   
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Button 
-                      onClick={() => getRepoLink(repo.id)}
-                      variant="outline" 
-                      className="border-white/20 bg-white/10 text-white hover:bg-white/20"
-                    >
-                      {copiedRepo === repo.id ? (
-                        <>
-                          <CheckCircle size={16} className="mr-2 text-green-500" />
-                          Copied
-                        </>
-                      ) : (
-                        <>
-                          <Link2 size={16} className="mr-2" />
-                          Get Link
-                        </>
-                      )}
-                    </Button>
-                    <Button 
-                      onClick={() => deployRepo(repo.id)}
-                      className="bg-gradient-button"
-                    >
-                      <Rocket size={16} className="mr-2" />
-                      Deploy
-                    </Button>
+                  <div className="flex flex-col sm:flex-row gap-3 min-w-[240px]">
+                    {deploymentStatus[repo.id] === 'success' ? (
+                      <Button 
+                        onClick={() => getRepoLink(repo.id, repo.name)}
+                        variant="outline" 
+                        className="border-white/20 bg-white/10 text-white hover:bg-white/20"
+                      >
+                        {copiedRepo === repo.id ? (
+                          <>
+                            <CheckCircle size={16} className="mr-2 text-green-500" />
+                            Copied
+                          </>
+                        ) : (
+                          <>
+                            <Link2 size={16} className="mr-2" />
+                            Get Link
+                          </>
+                        )}
+                      </Button>
+                    ) : (
+                      <Button 
+                        onClick={() => handleDeploy(repo.id, repo.name, repo.clone_url || '')}
+                        disabled={isDeploying === repo.id || deploymentStatus[repo.id] === 'pending'}
+                        className={`${
+                          deploymentStatus[repo.id] === 'error' 
+                            ? 'bg-red-500 hover:bg-red-600' 
+                            : 'bg-gradient-button hover:opacity-90'
+                        } min-w-[120px]`}
+                      >
+                        {isDeploying === repo.id || deploymentStatus[repo.id] === 'pending' ? (
+                          <>
+                            <div className="h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
+                            Deploying...
+                          </>
+                        ) : deploymentStatus[repo.id] === 'error' ? (
+                          <>
+                            <AlertCircle size={16} className="mr-2" />
+                            Retry
+                          </>
+                        ) : (
+                          <>
+                            <Rocket size={16} className="mr-2" />
+                            Deploy
+                          </>
+                        )}
+                      </Button>
+                    )}
+                    
+                    {deploymentStatus[repo.id] === 'pending' && (
+                      <div className="w-full mt-2">
+                        <Progress 
+                          value={65} 
+                          className="h-1 bg-blue-950"
+                          style={{ 
+                            '--tw-gradient-from': '#3b82f6',
+                            '--tw-gradient-to': '#60a5fa' 
+                          } as React.CSSProperties}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
