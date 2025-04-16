@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="600" viewBox="0 0 1200 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark Background -->
+  <rect width="1200" height="600" fill="#111827"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="1200" height="60" fill="#1F2937"/>
+  <circle cx="40" cy="30" r="20" fill="#3B82F6"/>
+  <rect x="80" y="20" width="100" height="20" rx="4" fill="#374151"/>
+  <rect x="1000" y="20" width="80" height="20" rx="4" fill="#374151"/>
+  <rect x="1100" y="20" width="60" height="20" rx="4" fill="#374151"/>
+  
+  <!-- Sidebar -->
+  <rect x="0" y="60" width="220" height="540" fill="#1F2937"/>
+  <rect x="20" y="100" width="180" height="30" rx="4" fill="#374151"/>
+  <rect x="20" y="150" width="180" height="30" rx="4" fill="#374151"/>
+  <rect x="20" y="200" width="180" height="30" rx="4" fill="#374151"/>
+  
+  <!-- Main Content -->
+  <!-- Deployment Cards -->
+  <rect x="240" y="80" width="920" height="100" rx="8" fill="#1F2937"/>
+  <rect x="260" y="100" width="200" height="20" rx="4" fill="#374151"/>
+  <rect x="260" y="130" width="300" height="15" rx="4" fill="#2563EB" fill-opacity="0.3"/>
+  <rect x="900" y="110" width="100" height="40" rx="4" fill="#2563EB"/>
+  
+  <rect x="240" y="200" width="920" height="100" rx="8" fill="#1F2937"/>
+  <rect x="260" y="220" width="200" height="20" rx="4" fill="#374151"/>
+  <rect x="260" y="250" width="300" height="15" rx="4" fill="#2563EB" fill-opacity="0.3"/>
+  <rect x="900" y="230" width="100" height="40" rx="4" fill="#2563EB"/>
+  
+  <rect x="240" y="320" width="920" height="100" rx="8" fill="#1F2937"/>
+  <rect x="260" y="340" width="200" height="20" rx="4" fill="#374151"/>
+  <rect x="260" y="370" width="300" height="15" rx="4" fill="#2563EB" fill-opacity="0.3"/>
+  <rect x="900" y="350" width="100" height="40" rx="4" fill="#2563EB"/>
+  
+  <!-- Stats Section -->
+  <rect x="240" y="440" width="450" height="180" rx="8" fill="#1F2937"/>
+  <rect x="710" y="440" width="450" height="180" rx="8" fill="#1F2937"/>
+  
+  <!-- Stats Graph Lines -->
+  <path d="M260 560 L360 520 L460 540 L560 500 L660 530" stroke="#3B82F6" stroke-width="2"/>
+  <path d="M730 560 L830 530 L930 550 L1030 510 L1130 540" stroke="#8B5CF6" stroke-width="2"/>
+  
+  <!-- Deployment Status Indicators -->
+  <circle cx="1160" cy="100" r="6" fill="#10B981"/>
+  <circle cx="1160" cy="220" r="6" fill="#10B981"/>
+  <circle cx="1160" cy="340" r="6" fill="#3B82F6"/>
+</svg> 

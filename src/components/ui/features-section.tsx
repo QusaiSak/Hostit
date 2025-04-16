@@ -1,12 +1,11 @@
-
 import { motion } from 'framer-motion';
-import { 
-  Bot, 
-  Github, 
-  Rocket,
-  Link as LinkIcon,
+import {
+  Bot,
   Code,
-  RefreshCw
+  Github,
+  Link as LinkIcon,
+  RefreshCw,
+  Rocket
 } from 'lucide-react';
 
 interface FeatureCardProps {
@@ -43,33 +42,15 @@ export function FeaturesSection() {
     {
       icon: <Rocket className="w-6 h-6 text-white" />,
       title: "One-Click Deployment",
-      description: "Deploy your projects in seconds, no complex configuration required.",
+      description: "Deploy your projects in seconds with our streamlined deployment process.",
       delay: 0.2
     },
     {
       icon: <Bot className="w-6 h-6 text-white" />,
-      title: "AI Assistance",
-      description: "Get help with your projects from our AI assistant at every step.",
+      title: "Chat Support",
+      description: "Get instant help from our chat assistant for any deployment questions.",
       delay: 0.3
     },
-    {
-      icon: <LinkIcon className="w-6 h-6 text-white" />,
-      title: "Custom Domains",
-      description: "Connect your own domain to your deployed projects easily.",
-      delay: 0.4
-    },
-    {
-      icon: <Code className="w-6 h-6 text-white" />,
-      title: "Framework Support",
-      description: "Support for popular frameworks including React, Next.js, Vue, and more.",
-      delay: 0.5
-    },
-    {
-      icon: <RefreshCw className="w-6 h-6 text-white" />,
-      title: "Continuous Deployment",
-      description: "Automatically deploy updates when you push to your repository.",
-      delay: 0.6
-    }
   ];
 
   return (
@@ -85,7 +66,7 @@ export function FeaturesSection() {
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Supercharge Your Deployment Workflow</h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Everything you need to deploy and manage your projects,
-            powered by AI and seamless GitHub integration.
+            with simple one-click deployment and helpful chat support.
           </p>
         </motion.div>
 

@@ -1,32 +1,32 @@
-
-import { useState } from 'react';
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
-import { Navbar } from '@/components/ui/navbar';
-import { Footer } from '@/components/ui/footer';
 import { AiChatAssistant } from '@/components/ui/ai-chat-assistant';
-import { motion } from 'framer-motion';
-import { 
-  Book, 
-  Search, 
-  ChevronRight, 
-  Copy, 
-  CheckCircle,
-  FileText,
-  Code,
-  Terminal,
-  Settings,
-  HelpCircle,
-  Cpu,
-  Globe,
-  Shield,
-  Zap,
-  Database,
-  Layers,
-  Server
-} from 'lucide-react';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Footer } from '@/components/ui/footer';
+import { Input } from '@/components/ui/input';
+import { Navbar } from '@/components/ui/navbar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RedirectToSignIn, SignedIn, SignedOut } from '@clerk/clerk-react';
+import { motion } from 'framer-motion';
+import {
+  Book,
+  Bot,
+  CheckCircle,
+  ChevronRight,
+  Code,
+  Copy,
+  Cpu,
+  Database,
+  FileText,
+  Globe,
+  HelpCircle,
+  Layers,
+  Search,
+  Server,
+  Settings,
+  Shield,
+  Terminal,
+  Zap
+} from 'lucide-react';
+import { useState } from 'react';
 
 const Documentation = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -219,7 +219,7 @@ const Documentation = () => {
                       <h2 className="text-3xl font-bold mb-6">Getting Started with HostIT</h2>
                       <div className="bg-black/30 backdrop-blur-sm border border-white/10 rounded-lg p-6 mb-8">
                         <p className="text-gray-300 mb-4">
-                          HostIT is a modern deployment platform that integrates with GitHub to help you deploy your projects quickly and easily. Our AI-powered platform automatically analyzes your code and sets up the optimal deployment environment.
+                          HostIT is a modern deployment platform that integrates with GitHub to help you deploy your projects quickly and easily. Our platform provides one-click deployments with automated environment setup and a helpful chat assistant to guide you through the process.
                         </p>
                         <p className="text-gray-300 mb-4">
                           This documentation will guide you through the process of setting up your account, connecting your GitHub repositories, and deploying your first project.
@@ -275,7 +275,7 @@ const Documentation = () => {
                           </li>
                           <li>
                             <span className="font-medium text-white">Configure deployment settings</span>
-                            <p className="mt-1 ml-6">Set your preferred deployment settings or use our AI recommendations.</p>
+                            <p className="mt-1 ml-6">Choose your deployment settings or use our recommended defaults.</p>
                           </li>
                           <li>
                             <span className="font-medium text-white">Deploy your project</span>
@@ -486,18 +486,18 @@ const Documentation = () => {
                           <div>
                             <div className="flex items-center mb-3">
                               <div className="bg-blue-500/20 p-2 rounded-lg mr-3">
-                                <Zap className="w-5 h-5 text-blue-400" />
+                                <Bot className="w-5 h-5 text-blue-400" />
                               </div>
-                              <h4 className="text-xl font-bold text-white" id="ai-assistance">AI Assistance</h4>
+                              <h4 className="text-xl font-bold text-white" id="ai-assistance">Chat Assistant</h4>
                             </div>
                             <p className="text-gray-300 mb-4">
-                              Our AI-powered assistant helps optimize your deployment process:
+                              Our chat assistant helps you with:
                             </p>
                             <ul className="list-disc list-inside space-y-2 text-gray-300">
-                              <li>Framework detection</li>
-                              <li>Build optimization suggestions</li>
-                              <li>Deployment troubleshooting</li>
-                              <li>Performance recommendations</li>
+                              <li>Deployment guidance</li>
+                              <li>Platform feature explanations</li>
+                              <li>Troubleshooting help</li>
+                              <li>Best practice recommendations</li>
                             </ul>
                           </div>
                           

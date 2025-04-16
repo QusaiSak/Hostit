@@ -1,8 +1,7 @@
-
 import { motion } from 'framer-motion';
-import { Button } from './button';
 import { ArrowRight, Github, Rocket } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Button } from './button';
 
 export function HeroSection() {
   const navigate = useNavigate();
@@ -94,7 +93,7 @@ export function HeroSection() {
           {[
             { title: "Quick Deployment", description: "Deploy in under 60 seconds" },
             { title: "GitHub Integration", description: "Seamless repository connection" },
-            { title: "AI Assistance", description: "Get help at every step" }
+            { title: "Chat Support", description: "Get help when you need it" }
           ].map((feature, index) => (
             <div key={index} className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/10">
               <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>

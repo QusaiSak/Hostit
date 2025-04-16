@@ -1,10 +1,10 @@
 
+import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/clerk-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Github, Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Button } from './button';
-import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/clerk-react';
-import { Menu, X, Github } from 'lucide-react';
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -30,7 +30,6 @@ export function Navbar() {
             <Link to="/" className="text-gray-300 hover:text-white transition-colors">Home</Link>
             <Link to="/features" className="text-gray-300 hover:text-white transition-colors">Features</Link>
             <Link to="/pricing" className="text-gray-300 hover:text-white transition-colors">Pricing</Link>
-            <Link to="/docs" className="text-gray-300 hover:text-white transition-colors">Docs</Link>
           </nav>
 
           {/* Auth Buttons - Desktop */}

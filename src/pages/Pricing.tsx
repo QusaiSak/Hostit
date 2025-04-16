@@ -1,21 +1,29 @@
-
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
-import { Navbar } from '@/components/ui/navbar';
-import { Footer } from '@/components/ui/footer';
 import { AiChatAssistant } from '@/components/ui/ai-chat-assistant';
-import { motion } from 'framer-motion';
-import { Check, HelpCircle, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Footer } from '@/components/ui/footer';
+import { Navbar } from '@/components/ui/navbar';
+import { RedirectToSignIn, SignedIn, SignedOut } from '@clerk/clerk-react';
+import { motion } from 'framer-motion';
+import { Check, DollarSign, HelpCircle, Rocket, Zap } from 'lucide-react';
+import { useState } from 'react';
 
 const Pricing = () => {
+  const [isAnnual, setIsAnnual] = useState(false);
+
+  const getPrice = (monthlyPrice: number) => {
+    if (monthlyPrice === 0) return "$0";
+    const annual = monthlyPrice * 12 * 0.8; // 20% discount for annual
+    return isAnnual ? `$${Math.floor(annual / 12)}` : `$${monthlyPrice}`;
+  };
+
   const plans = [
     {
       name: "Free",
       description: "Perfect for personal projects and experimentation",
-      price: "$0",
+      price: getPrice(0),
       period: "forever",
-      color: "from-blue-500 to-blue-600",
-      buttonColor: "bg-white text-blue-600",
+      color: "from-blue-500/20 to-blue-600/20",
+      buttonColor: "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700",
       features: [
         "3 projects",
         "1GB bandwidth per month",
@@ -28,10 +36,10 @@ const Pricing = () => {
     {
       name: "Pro",
       description: "For professionals and growing teams",
-      price: "$19",
-      period: "per month",
-      color: "from-indigo-500 to-violet-500",
-      buttonColor: "bg-gradient-button",
+      price: getPrice(19),
+      period: isAnnual ? "per month, billed annually" : "per month",
+      color: "from-indigo-500/20 to-violet-500/20",
+      buttonColor: "bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600",
       popular: true,
       features: [
         "Unlimited projects",
@@ -47,21 +55,21 @@ const Pricing = () => {
     },
     {
       name: "Enterprise",
-      description: "For large organizations with advanced needs",
-      price: "Custom",
-      period: "contact sales",
-      color: "from-violet-500 to-purple-600",
-      buttonColor: "bg-white/10 backdrop-blur-md border border-white/20",
+      description: "For large organizations with custom needs",
+      price: getPrice(49),
+      period: isAnnual ? "per month, billed annually" : "per month",
+      color: "from-purple-500/20 to-pink-500/20",
+      buttonColor: "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600",
       features: [
-        "Everything in Pro",
-        "Unlimited bandwidth",
-        "24/7 dedicated support",
-        "Enterprise SLA",
-        "Advanced security features",
-        "Single sign-on",
+        "Unlimited everything",
+        "24/7 premium support",
         "Custom integrations",
-        "Dedicated infrastructure",
-        "Compliance assistance"
+        "Enterprise analytics",
+        "Advanced security",
+        "SLA guarantee",
+        "Dedicated account manager",
+        "Custom contracts",
+        "On-premise deployment",
       ],
       delay: 0.3
     }
@@ -112,63 +120,88 @@ const Pricing = () => {
                 </div>
               </div>
               <h1 className="text-4xl md:text-5xl font-bold mb-4">Simple, Transparent Pricing</h1>
-              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
                 Choose the plan that fits your needs. All plans include core features to get you started.
               </p>
               
-              <div className="flex items-center justify-center mt-6 space-x-4">
-                <span className="text-white font-medium">Monthly</span>
-                <button className="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none bg-indigo-600">
-                  <span className="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+              {/* Billing Toggle */}
+              <div className="flex items-center justify-center gap-4">
+                <span className={`text-sm ${!isAnnual ? 'text-white' : 'text-gray-400'}`}>Monthly</span>
+                <button
+                  onClick={() => setIsAnnual(!isAnnual)}
+                  className={`relative w-16 h-8 rounded-full transition-colors duration-300 ${
+                    isAnnual ? 'bg-gradient-to-r from-indigo-500 to-violet-500' : 'bg-gray-700'
+                  }`}
+                >
+                  <div
+                    className={`absolute top-1 left-1 w-6 h-6 rounded-full bg-white transform transition-transform duration-300 ${
+                      isAnnual ? 'translate-x-8' : 'translate-x-0'
+                    }`}
+                  />
                 </button>
-                <span className="text-white font-medium flex items-center">
-                  Annual
-                  <span className="ml-2 text-xs bg-gradient-button px-2 py-1 rounded-full text-white">Save 20%</span>
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className={`text-sm ${isAnnual ? 'text-white' : 'text-gray-400'}`}>Annual</span>
+                  <span className="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-emerald-400">
+                    Save 20%
+                  </span>
+                </div>
               </div>
             </motion.div>
 
-            {/* Pricing Plans */}
+            {/* Pricing Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-              {plans.map((plan, index) => (
+              {plans.map((plan) => (
                 <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: plan.delay }}
-                  viewport={{ once: true }}
-                  className={`relative bg-black/40 backdrop-blur-sm border rounded-xl overflow-hidden ${
-                    plan.popular ? 'border-indigo-500/50 shadow-lg shadow-indigo-500/20 scale-105' : 'border-white/10'
-                  }`}
+                  key={plan.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: plan.delay }}
+                  className="relative group h-full"
                 >
                   {plan.popular && (
-                    <div className="absolute top-0 left-0 right-0 bg-gradient-button text-white text-sm font-medium py-1 text-center">
-                      Most Popular
+                    <div className="absolute -top-4 left-0 right-0 flex justify-center">
+                      <span className="px-3 py-1 text-sm rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-lg">
+                        Most Popular
+                      </span>
                     </div>
                   )}
-                  <div className={`h-1 bg-gradient-to-r ${plan.color}`}></div>
-                  <div className="p-8">
-                    <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                    <p className="text-gray-400 mb-6">{plan.description}</p>
-                    <div className="mb-6">
-                      <span className="text-4xl font-bold">{plan.price}</span>
-                      <span className="text-gray-400 ml-2">{plan.period}</span>
+                  
+                  <div className={`absolute inset-0 bg-gradient-to-br ${plan.color} rounded-2xl blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-500`} />
+                  <div className="relative bg-black/40 border border-white/10 rounded-2xl p-8 hover:border-white/20 transition-colors duration-300 h-full flex flex-col">
+                    <div className="mb-auto">
+                      <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                      <p className="text-gray-400 mb-6 min-h-[48px]">{plan.description}</p>
+                      <div className="mb-6">
+                        <span className="text-4xl font-bold">{plan.price}</span>
+                        <span className="text-gray-400 ml-2">{plan.period}</span>
+                      </div>
                     </div>
-                    
-                    <Button 
-                      className={`w-full mb-8 ${plan.buttonColor}`}
-                    >
-                      {plan.price === "Custom" ? "Contact Sales" : "Get Started"}
-                    </Button>
-                    
-                    <ul className="space-y-3">
-                      {plan.features.map((feature, i) => (
-                        <li key={i} className="flex items-start">
-                          <Check className="w-5 h-5 text-indigo-400 mr-2 mt-0.5" />
-                          <span className="text-gray-300">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="space-y-8">
+                      <Button 
+                        className={`w-full ${plan.buttonColor} group relative`}
+                      >
+                        {plan.name === "Enterprise" ? (
+                          <>
+                            <HelpCircle className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+                            Contact Sales
+                          </>
+                        ) : (
+                          <>
+                            <Rocket className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+                            Get Started
+                          </>
+                        )}
+                        <div className="absolute inset-0 rounded-lg bg-white/10 blur opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      </Button>
+                      <ul className="space-y-3 min-h-[320px]">
+                        {plan.features.map((feature) => (
+                          <li key={feature} className="flex items-center text-gray-300">
+                            <Check className="h-5 w-5 text-green-400 mr-3 flex-shrink-0" />
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 </motion.div>
               ))}
@@ -209,7 +242,7 @@ const Pricing = () => {
               </div>
             </motion.div>
 
-            {/* CTA Section */}
+            {/* Enterprise CTA */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -222,20 +255,19 @@ const Pricing = () => {
                 Our enterprise plan can be tailored to your organization's specific needs. Let's discuss how we can help.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <motion.button 
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="bg-gradient-button px-8 py-3 rounded-lg text-white font-medium"
+                <Button 
+                  className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-6 shadow-xl hover:shadow-blue-500/20 transition-all duration-300"
                 >
+                  <Zap className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
                   Contact Sales
-                </motion.button>
-                <motion.button 
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="border border-white/20 bg-white/10 px-8 py-3 rounded-lg text-white font-medium"
+                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-400/20 to-purple-400/20 blur opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="group relative border-white/20 bg-white/10 text-white hover:bg-white/20 text-lg px-8 py-6 backdrop-blur-sm"
                 >
                   Schedule Demo
-                </motion.button>
+                </Button>
               </div>
             </motion.div>
           </main>
