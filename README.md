@@ -1,73 +1,99 @@
-# Welcome to your Lovable project
+# HostIT - Modern Application Deployment Platform
 
-## Project info
+![HostIT Platform](public/hero-preview.png)
 
-**URL**: https://lovable.dev/projects/0314c3dc-9afd-4556-8200-20dea7fada21
+HostIT is a modern, user-friendly platform that simplifies application deployment through GitHub integration, offering features like one-click deployments, real-time monitoring, and AI-powered assistance.
 
-## How can I edit this code?
+## ✨ Features
 
-There are several ways of editing your application.
+### 🚀 Core Features
+- **One-Click Deployments**: Deploy applications instantly with automated setup
+- **GitHub Integration**: Seamless connection with your GitHub repositories
+- **AI-Powered Assistant**: Get real-time help with deployments and troubleshooting
 
-**Use Lovable**
+## 🛠️ Tech Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/0314c3dc-9afd-4556-8200-20dea7fada21) and start prompting.
+- **Frontend**: React + Vite + TypeScript
+- **UI Components**: Tailwind CSS + Framer Motion
+- **Authentication**: Clerk
+- **AI Integration**: OpenRouter API (Gemini Model)
+- **Version Control**: GitHub
 
-Changes made via Lovable will be committed automatically to this repo.
+## 📦 Installation
 
-**Use your preferred IDE**
+1. Clone the repository:
+```bash
+git clone https://github.com/QusaiSak/hostit.git
+cd hostit
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+2. Install dependencies:
+```bash
+npm install
+```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+3. Set up environment variables:
+```bash
+cp .env.example .env
+```
 
-Follow these steps:
+4. Configure your environment variables in `.env`:
+```env
+VITE_CLERK_PUBLISHABLE_KEY=your_clerk_key
+VITE_OPENROUTER_API_KEY=your_openrouter_key
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+5. Start the development server:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 🚀 Deployment
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. Build the project:
+```bash
+npm run build
+```
 
-**Use GitHub Codespaces**
+2. Deploy to your preferred platform (e.g., Vercel, Netlify):
+```bash
+vercel deploy
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🔑 Environment Variables
 
-## What technologies are used for this project?
+| Variable | Description |
+|----------|-------------|
+| `VITE_CLERK_PUBLISHABLE_KEY` | Clerk authentication public key |
+| `VITE_OPENROUTER_API_KEY` | OpenRouter API key for AI assistant |
 
-This project is built with:
+## 📚 Documentation
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+For detailed documentation, visit our [Documentation Page](https://your-domain.com/documentation).
 
-## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/0314c3dc-9afd-4556-8200-20dea7fada21) and click on Share -> Publish.
+## 🤝 Contributing
 
-## Can I connect a custom domain to my Lovable project?
+1. Fork the repository
+2. Create your feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
 
-Yes, you can!
+## 📄 License
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 🙏 Acknowledgments
+
+- [Clerk](https://clerk.dev/) for authentication
+- [OpenRouter](https://openrouter.ai/) for AI capabilities
+- [Tailwind CSS](https://tailwindcss.com/) for styling
+- [Framer Motion](https://www.framer.com/motion/) for animations
+
+## 📞 Support
+
+Need help? Join our [Discord community](https://discord.gg/your-server) or contact us at support@your-domain.com.
+
+---
+Made with ❤️ by HostIT
