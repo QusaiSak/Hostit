@@ -39,6 +39,8 @@ export function GithubRepoList() {
   const [deploymentId, setDeploymentId] = useState<string | null>(null);
   const [deploymentUrl, setDeploymentUrl] = useState<string | null>(null);
   const [showDeploymentLoading, setShowDeploymentLoading] = useState(false);
+  const [deploymentUrls, setDeploymentUrls] = useState<Record<number, string>>({});
+  const [copiedRepoId, setCopiedRepoId] = useState<number | null>(null);
 
   const fetchRepositories = async (username: string) => {
     try {
@@ -184,7 +186,7 @@ export function GithubRepoList() {
     setShowDeploymentLoading(true);
     
     try {
-      const response = await fetch('http://localhost:3000/deploy', {
+      const response = await fetch('http://10.0.24.195:3000/deploy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -202,6 +204,7 @@ export function GithubRepoList() {
       setDeploymentUrl(deployUrl);
       setDeploymentStatus(prev => ({ ...prev, [repoId]: 'success' }));
       setIsDeploying(null);
+      setDeploymentUrls(prev => ({ ...prev, [repoId]: deployUrl }));
       
       toast({
         title: "Deployment Successful",
@@ -227,6 +230,17 @@ export function GithubRepoList() {
     setDeploymentId(null);
     setDeploymentUrl(null);
     setIsDeploying(null);
+  };
+
+  const handleCopyUrl = async (repoId: number, url: string) => {
+    await navigator.clipboard.writeText(url);
+    setCopiedRepoId(repoId);
+    setTimeout(() => setCopiedRepoId(null), 2000);
+    
+    toast({
+      title: "Link Copied",
+      description: "Deployment URL copied to clipboard",
+    });
   };
 
   if (isLoading && !repos.length) {
@@ -359,32 +373,48 @@ export function GithubRepoList() {
                     </div>
                     
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <Button 
-                        onClick={() => handleDeploy(repo.id, repo.name, repo.clone_url || '')}
-                        disabled={isDeploying === repo.id || deploymentStatus[repo.id] === 'pending'}
-                        className={`${
-                          deploymentStatus[repo.id] === 'error' 
-                            ? 'bg-red-500 hover:bg-red-600' 
-                            : 'bg-blue-500 hover:bg-blue-600'
-                        } min-w-[120px]`}
-                      >
-                        {isDeploying === repo.id || deploymentStatus[repo.id] === 'pending' ? (
-                          <>
-                            <div className="h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
-                            Deploying...
-                          </>
-                        ) : deploymentStatus[repo.id] === 'error' ? (
-                          <>
-                            <AlertCircle size={16} className="mr-2" />
-                            Retry
-                          </>
-                        ) : (
-                          <>
-                            <Rocket size={16} className="mr-2" />
-                            Deploy
-                          </>
-                        )}
-                      </Button>
+                      {deploymentStatus[repo.id] === 'success' && deploymentUrls[repo.id] ? (
+                        <div 
+                          onClick={() => handleCopyUrl(repo.id, deploymentUrls[repo.id])}
+                          className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 transition-colors min-w-[200px]"
+                        >
+                          <span className="text-blue-400 truncate flex-1">
+                            {deploymentUrls[repo.id]}
+                          </span>
+                          {copiedRepoId === repo.id ? (
+                            <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                          ) : (
+                            <Copy className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                          )}
+                        </div>
+                      ) : (
+                        <Button 
+                          onClick={() => handleDeploy(repo.id, repo.name, repo.clone_url || '')}
+                          disabled={isDeploying === repo.id || deploymentStatus[repo.id] === 'pending'}
+                          className={`${
+                            deploymentStatus[repo.id] === 'error' 
+                              ? 'bg-red-500 hover:bg-red-600' 
+                              : 'bg-blue-500 hover:bg-blue-600'
+                          } min-w-[120px]`}
+                        >
+                          {isDeploying === repo.id || deploymentStatus[repo.id] === 'pending' ? (
+                            <>
+                              <div className="h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
+                              Deploying...
+                            </>
+                          ) : deploymentStatus[repo.id] === 'error' ? (
+                            <>
+                              <AlertCircle size={16} className="mr-2" />
+                              Retry
+                            </>
+                          ) : (
+                            <>
+                              <Rocket size={16} className="mr-2" />
+                              Deploy
+                            </>
+                          )}
+                        </Button>
+                      )}
                       
                       {deploymentStatus[repo.id] === 'pending' && (
                         <div className="w-full mt-2">
