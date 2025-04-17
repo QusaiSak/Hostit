@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, CheckCircle, ChevronLeft, ChevronRight, Clock, Code, Copy, Github, Link2, RefreshCw, Rocket, Search, Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from './button';
+import { DeploymentLoading } from './deployment-loading';
 import { Input } from './input';
 import { Progress } from './progress';
 
@@ -35,6 +36,9 @@ export function GithubRepoList() {
   const { toast } = useToast();
   const { user, isSignedIn } = useUser();
   const { getToken } = useAuth();
+  const [deploymentId, setDeploymentId] = useState<string | null>(null);
+  const [deploymentUrl, setDeploymentUrl] = useState<string | null>(null);
+  const [showDeploymentLoading, setShowDeploymentLoading] = useState(false);
 
   const fetchRepositories = async (username: string) => {
     try {
@@ -177,9 +181,10 @@ export function GithubRepoList() {
   const handleDeploy = async (repoId: number, repoName: string, repoUrl: string) => {
     setIsDeploying(repoId);
     setDeploymentStatus(prev => ({ ...prev, [repoId]: 'pending' }));
+    setShowDeploymentLoading(true);
     
     try {
-      const response = await fetch('https://localhost:3000/deploy', {
+      const response = await fetch('http://localhost:3000/deploy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -192,40 +197,36 @@ export function GithubRepoList() {
       if (!response.ok) throw new Error('Deployment failed');
       const data = await response.json();
       
+      setDeploymentId(data.id);
+      const deployUrl = `http://${data.id}.localhost:3001`;
+      setDeploymentUrl(deployUrl);
       setDeploymentStatus(prev => ({ ...prev, [repoId]: 'success' }));
+      setIsDeploying(null);
       
       toast({
         title: "Deployment Successful",
         description: `${repoName} has been deployed successfully.`,
       });
+      
     } catch (error) {
       console.error('Deployment error:', error);
       setDeploymentStatus(prev => ({ ...prev, [repoId]: 'error' }));
+      setShowDeploymentLoading(false);
+      setIsDeploying(null);
       
       toast({
         title: "Deployment Failed",
         description: "There was an error deploying your repository.",
         variant: "destructive"
       });
-    } finally {
-      setIsDeploying(null);
     }
   };
 
-  const getRepoLink = (repoId: number, repoName: string) => {
-    // This would generate a deployment link in a real app
-    const deploymentUrl = `https://hostit-${repoName.toLowerCase().replace(/[^a-z0-9]/g, '-')}.vercel.app`;
-    
-    // Copy to clipboard
-    navigator.clipboard.writeText(deploymentUrl).then(() => {
-      setCopiedRepo(repoId);
-      toast({
-        title: "Link Copied",
-        description: "Deployment link copied to clipboard.",
-      });
-      
-      setTimeout(() => setCopiedRepo(null), 3000);
-    });
+  const handleCloseDeployment = () => {
+    setShowDeploymentLoading(false);
+    setDeploymentId(null);
+    setDeploymentUrl(null);
+    setIsDeploying(null);
   };
 
   if (isLoading && !repos.length) {
@@ -357,53 +358,33 @@ export function GithubRepoList() {
                       </div>
                     </div>
                     
-                    <div className="flex flex-col sm:flex-row gap-3 min-w-[240px]">
-                      {deploymentStatus[repo.id] === 'success' ? (
-                        <Button 
-                          onClick={() => getRepoLink(repo.id, repo.name)}
-                          variant="outline" 
-                          className="border-white/20 bg-white/10 text-white hover:bg-white/20"
-                        >
-                          {copiedRepo === repo.id ? (
-                            <>
-                              <CheckCircle size={16} className="mr-2 text-green-500" />
-                              Copied
-                            </>
-                          ) : (
-                            <>
-                              <Link2 size={16} className="mr-2" />
-                              Get Link
-                            </>
-                          )}
-                        </Button>
-                      ) : (
-                        <Button 
-                          onClick={() => handleDeploy(repo.id, repo.name, repo.clone_url || '')}
-                          disabled={isDeploying === repo.id || deploymentStatus[repo.id] === 'pending'}
-                          className={`${
-                            deploymentStatus[repo.id] === 'error' 
-                              ? 'bg-red-500 hover:bg-red-600' 
-                              : 'bg-blue-500 hover:bg-blue-600'
-                          } min-w-[120px]`}
-                        >
-                          {isDeploying === repo.id || deploymentStatus[repo.id] === 'pending' ? (
-                            <>
-                              <div className="h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
-                              Deploying...
-                            </>
-                          ) : deploymentStatus[repo.id] === 'error' ? (
-                            <>
-                              <AlertCircle size={16} className="mr-2" />
-                              Retry
-                            </>
-                          ) : (
-                            <>
-                              <Rocket size={16} className="mr-2" />
-                              Deploy
-                            </>
-                          )}
-                        </Button>
-                      )}
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button 
+                        onClick={() => handleDeploy(repo.id, repo.name, repo.clone_url || '')}
+                        disabled={isDeploying === repo.id || deploymentStatus[repo.id] === 'pending'}
+                        className={`${
+                          deploymentStatus[repo.id] === 'error' 
+                            ? 'bg-red-500 hover:bg-red-600' 
+                            : 'bg-blue-500 hover:bg-blue-600'
+                        } min-w-[120px]`}
+                      >
+                        {isDeploying === repo.id || deploymentStatus[repo.id] === 'pending' ? (
+                          <>
+                            <div className="h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
+                            Deploying...
+                          </>
+                        ) : deploymentStatus[repo.id] === 'error' ? (
+                          <>
+                            <AlertCircle size={16} className="mr-2" />
+                            Retry
+                          </>
+                        ) : (
+                          <>
+                            <Rocket size={16} className="mr-2" />
+                            Deploy
+                          </>
+                        )}
+                      </Button>
                       
                       {deploymentStatus[repo.id] === 'pending' && (
                         <div className="w-full mt-2">
@@ -477,6 +458,17 @@ export function GithubRepoList() {
               <ChevronRight size={16} />
             </Button>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showDeploymentLoading && (
+          <DeploymentLoading
+            deploymentId={deploymentId}
+            isLoading={!deploymentId}
+            deploymentUrl={deploymentUrl}
+            onClose={handleCloseDeployment}
+          />
         )}
       </AnimatePresence>
     </div>
