@@ -97,4 +97,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Need help? Join our [Discord community](https://discord.gg/your-server) or contact us at support@your-domain.com.
 
 ---
-Made with ❤️ by HostIT
+Made with ❤️ by Team
